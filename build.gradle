@@ -1,0 +1,58 @@
+allprojects {
+    apply plugin: 'java'
+    sourceCompatibility = 1.8
+
+    apply plugin: 'maven-publish'
+//    publish {
+//        publications {
+//            helloPublish(MavenPublication){
+//                from components.java
+//            }
+//        }
+//        repositories {
+//            maven {
+//                name "fcsca"
+//                url ""
+//            }
+//        }
+//    }
+}
+
+subprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        // https://mvnrepository.com/artifact/org.hibernate/hibernate-core
+        compile group: 'org.hibernate', name: 'hibernate-core', version: '5.3.6.Final'
+        testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+    }
+}
+
+def createDir = {
+    path ->
+        File dir = new File(path)
+        if (!dir.exists()) {
+            dir.mkdirs()
+        }
+}
+
+task makeJavaDir(){
+    def paths = ['src/main/java/cn.fcsca',
+                 'src/main/resources',
+                 'src/test/java/cn/fcsca',
+                 'src/test/resources']
+    doFirst {
+        paths.forEach(createDir)
+    }
+}
+
+task makeWebDir(){
+    dependsOn 'makeJavaDir'
+    def paths = ['src/main/webapp']
+    doLast {
+        paths.forEach(createDir)
+    }
+}
